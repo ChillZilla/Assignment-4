@@ -2,7 +2,7 @@
     ADD YOUR HEADER HERE
  */
 
-package assignment5;
+package assignment4;
 
 import java.util.List;
 
@@ -18,7 +18,11 @@ public class WordLadderSolver implements Assignment4Interface
     public List<String> computeLadder(String startWord, String endWord) throws NoSuchLadderException 
     {
         // implement this method
-        throw new UnsupportedOperationException("Not implemented yet!");
+    	List<String> ladder = MakeLadder(startWord, endWord, 0);
+    	
+    	return ladder;
+       // throw new UnsupportedOperationException("Not implemented yet!");
+       
     }
 
     @Override
@@ -28,4 +32,10 @@ public class WordLadderSolver implements Assignment4Interface
     }
 
     // add additional methods here
+    public static List<String> MakeLadder(String startWord, String endWord, int numberWords)
+    {
+    	//here we will make our ladder
+    	
+    	return null;
+    }
 }
