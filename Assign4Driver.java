@@ -41,11 +41,16 @@ public class Assign4Driver
 		        try 
 		        {
 		            List<String> result = wordLadderSolver.computeLadder(parsedLine[0], parsedLine[1]);
-		            boolean correct = wordLadderSolver.validateResult(parsedLine[0], parsedLine[1], result);
+		          //  boolean correct = wordLadderSolver.validateResult(parsedLine[0], parsedLine[1], result);
+		            for(int printI = 0; printI < result.size(); printI ++)
+		            {
+		            	System.out.println(result.get(printI)); //print each word on a new line to console
+		            }
+		           
 		        } 
 		        catch (NoSuchLadderException e) 
 		        {
-		            e.printStackTrace();
+		           e.printStackTrace();
 		        }
 			}
 		} 
