@@ -13,6 +13,7 @@ public class WordLadderSolver implements Assignment4Interface
     private ArrayList<String> dict;
     private List<String> ladder;
     private ArrayList<String> usedWords;
+    private ArrayList<String> dictionaryCopy;
  
 
 	// declare class members here.
@@ -24,7 +25,7 @@ public class WordLadderSolver implements Assignment4Interface
     	this.dict = dictionary;
     	this.ladder = new ArrayList<String>();
     	this.usedWords = new ArrayList<String>();
-    	
+    	this.dictionaryCopy = new ArrayList<String>();
 	}
 
 	// do not change signature of the method implemented from the interface
@@ -32,8 +33,10 @@ public class WordLadderSolver implements Assignment4Interface
     public List<String> computeLadder(String startWord, String endWord) throws NoSuchLadderException 
     {
        // implement this method
+    	this.dictionaryCopy = new ArrayList<String>();
+    	this.dictionaryCopy.addAll(this.dict);
     	this.ladder = new ArrayList<String>();
-    	List<String> theLadder = makeLadder(startWord, endWord, 0);
+    	makeLadder(startWord, endWord, 0);
     	if(this.ladder.isEmpty()){
     		throw new NoSuchLadderException("No ladder exists between " + startWord + " and " + endWord);
     	}
@@ -94,9 +97,11 @@ public class WordLadderSolver implements Assignment4Interface
     		if(this.ladder.get(this.ladder.size()-1).equalsIgnoreCase(endWord)){return this.ladder;} //we found a word ladder
     		//no word ladder found? remove this from the ladder because we are not going to use this word
     		this.ladder.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length()));
+    		this.dictionaryCopy.remove(similarWords.get(simI).substring(0, similarWords.get(simI).length()));
     	}
     	//if we are out of the for loop, didn't find a word ladder, so we can remove the startword from the ladder and return
     	this.ladder.remove(newStart);
+    	this.dictionaryCopy.remove(newStart);
     	
     	return this.ladder;
     }
@@ -107,19 +112,19 @@ public class WordLadderSolver implements Assignment4Interface
     	//need to compare words that have one letter different from startword
     	ArrayList<String> similarWords = new ArrayList<String>();
     	int dIndex = 0;
-    	while(dIndex < this.dict.size())
+    	while(dIndex < this.dictionaryCopy.size())
     	{
     		//need to check if the dictionary word was already used. 
-    		if(alreadyUsed(this.dict.get(dIndex)))
+    		if(alreadyUsed(this.dictionaryCopy.get(dIndex)))
     		{
     			dIndex = dIndex + 1;
     			continue;
     		} //if this word is already used in our ladder, go to the next word, otherwise move on
     		
-    		boolean fourLettersame = compareWord(startWord, this.dict.get(dIndex), position); //returns if they have one letter the same
+    		boolean fourLettersame = compareWord(startWord, this.dictionaryCopy.get(dIndex), position); //returns if they have one letter the same
     		if(fourLettersame == true)
     		{//need to add (but also sort) the word into the similar words list.
-    			String word = appendDist(this.dict.get(dIndex), endWord); //adds the distance the word is from the endword to the word
+    			String word = appendDist(this.dictionaryCopy.get(dIndex), endWord); //adds the distance the word is from the endword to the word
     			int addedWord = 0;
     			for(int similarI = 0; similarI < similarWords.size(); similarI ++) //need to sort the list accordingly
     			{
@@ -144,13 +149,7 @@ public class WordLadderSolver implements Assignment4Interface
     }
            
     
-public ArrayList<String> findsimilarWords(String start, String end, int position)
-{
-	//dictionary is sorted.
-	
-	
-	return null;
-}    
+
 public ArrayList<String> getSimilar(String startword, String endword, int position)
     {
     	ArrayList<String> similarWords = new ArrayList<String>();
@@ -163,9 +162,9 @@ public ArrayList<String> getSimilar(String startword, String endword, int positi
     		String endLetter = endword.substring(wordIndex, wordIndex + 1);
     		String wordLetter = startword.substring(wordIndex, wordIndex + 1);
     		
-    		for(int dI = 0; dI < this.dict.size(); dI ++) //need to check the whole dictionary and see if we have a direct change of letters startword[1] -> endword[1]
+    		for(int dI = 0; dI < this.dictionaryCopy.size(); dI ++) //need to check the whole dictionary and see if we have a direct change of letters startword[1] -> endword[1]
     		{
-    			String dictWord = this.dict.get(dI);
+    			String dictWord = this.dictionaryCopy.get(dI);
     			if(alreadyUsed(dictWord))//we already have this word in our similar words list, so skip it.
         		{
         		
@@ -292,9 +291,9 @@ public String appendDist(String word, String endWord)
 
 public boolean alreadyUsed(String word) //checks to see if we have already used this word in our word ladder
 {
-	for(int usedIndex = 0; usedIndex < this.ladder.size(); usedIndex ++)
+	for(int usedIndex = 0; usedIndex < this.usedWords.size(); usedIndex ++)
 	{
-		if(word.equalsIgnoreCase(this.ladder.get(usedIndex)))
+		if(word.equalsIgnoreCase(this.usedWords.get(usedIndex)))
 		{
 			return true;
 		}
@@ -302,69 +301,5 @@ public boolean alreadyUsed(String word) //checks to see if we have already used 
 	return false;
 	
 }
-/* public List<String> makeLadder(String startWord, String endWord, int position)
-{
-	if(this.ladder.isEmpty()){position = -1;}
-	//base case : if endword one letter away from startword
-	String newStartWord = startWord;
-	if(startWord.substring(0, 1).matches("\\d")) //need to strip the number of places that the word is from the end word off the front of the word.
-	{
-		newStartWord = startWord.substring(1, startWord.length());
-	}
-	if(areWeDone(newStartWord, endWord))
-	{//add these words to the word ladder
-		this.ladder.add(newStartWord);
-		this.ladder.add(endWord);
-		return this.ladder;
-	}
-	//what if word is same?
-	
-	this.ladder.add(newStartWord); //add the first word the the word ladder
-	this.usedWords.add(newStartWord);
-	ArrayList<String> similarWords = getSimilar(newStartWord, endWord, position); //need to keep track of the letter we just recently changed
-	if(similarWords.size() == 0)
-	{ //throw exception?? no similar words to this word
-		similarWords = getSimilarWords(newStartWord, endWord, position);
-		if(similarWords.size() == 0)
-		{
-			return this.ladder;
-		}
-	}
-	    	
-	String addWord = similarWords.get(0).substring(1,  similarWords.get(0).length()); //remove the number from the word.
-	this.usedWords.add(addWord); //add the usedWord to the used Words list.
-	makeLadder(similarWords.get(0), endWord, whatPositionChanged(newStartWord, similarWords.get(0))); 
-	int indexDict = 1;
-	if(indexDict < similarWords.size()){
-		while(indexDict < similarWords.size()) //iterate through all possible similar words, if wordladder is null, and we haven't tried all similar words, try the next one
-		{
-			int sizeLadder = this.ladder.size();
-			if(this.ladder.get(sizeLadder-1).contentEquals(endWord)){return this.ladder;}
-			addWord = similarWords.get(0).substring(1,  similarWords.get(indexDict).length()); //remove the number from the word.
-			this.usedWords.remove(usedWords.size()-1); //remove the last element we added to the list, and add this new one.
-			this.usedWords.add(addWord);
-			makeLadder(similarWords.get(indexDict), endWord, whatPositionChanged(newStartWord, similarWords.get(indexDict))); 
-				
-			indexDict = indexDict + 1;
-		
-		}	
-	}
-	else
-	{
-		similarWords = getSimilarWords(newStartWord, endWord, position);
-		while(indexDict < similarWords.size())
-		{
-			int sizeLadder = this.ladder.size();
-			if(this.ladder.get(sizeLadder-1).contentEquals(endWord)){return this.ladder;}
-			addWord = similarWords.get(0).substring(1,  similarWords.get(indexDict).length()); //remove the number from the word.
-			this.usedWords.remove(usedWords.size()-1); //remove the last element we added to the list, and add this new one.
-			this.usedWords.add(addWord);
-			makeLadder(similarWords.get(indexDict), endWord, whatPositionChanged(newStartWord, similarWords.get(indexDict))); 
-				
-			indexDict = indexDict + 1;
-		}
-	}
-	this.usedWords.remove(usedWords.size()-1); //remove the last word we used from the used words list.
-	return null;
-}*/
+
 }
