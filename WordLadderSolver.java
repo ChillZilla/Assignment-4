@@ -35,10 +35,15 @@ public class WordLadderSolver implements Assignment4Interface
     public List<String> computeLadder(String startWord, String endWord) throws NoSuchLadderException 
     {
        // implement this method
+    	   	
+    	if(areWords(startWord, endWord))
+    	{
     	this.dictionaryCopy = new ArrayList<String>();
     	this.dictionaryCopy.addAll(this.dict);
     	this.ladder = new ArrayList<String>();
     	makeLadder(startWord, endWord, 0);
+    	}
+    	else{this.ladder = null;}
     	if(this.ladder.isEmpty()){
     		throw new NoSuchLadderException("No ladder exists between " + startWord + " and " + endWord);
     	}
@@ -56,6 +61,7 @@ public class WordLadderSolver implements Assignment4Interface
     // add additional methods here
     public List<String> makeLadder(String startWord, String endWord, int position)
     {
+    	
     	if(this.ladder.isEmpty()) //we just started, change the position to -1 so we can change the first letter
     	{
     		position = -1;
@@ -362,6 +368,23 @@ public boolean alreadyUsed(String word) //checks to see if we have already used 
 	}
 	return false;
 	
+}
+public boolean areWords(String start, String end)
+{
+	if(start == null || end == null){return false;}
+	if(start.length() != 5 || end.length() != 5)
+	{
+		return false;
+	}
+	for(int wordI = 0; wordI < start.length(); wordI ++)
+	{
+		if(!start.substring(wordI, wordI + 1).matches("[a-zA-Z]") || end.substring(wordI, wordI + 1).matches("[a-zA-Z]"))
+		{
+			return false;
+		}
+	}
+	//passed the for loop
+	return true;
 }
 
 }

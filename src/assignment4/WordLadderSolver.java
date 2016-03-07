@@ -6,6 +6,7 @@ package assignment4;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 // do not change class name or interface it implements
 public class WordLadderSolver implements Assignment4Interface
@@ -14,8 +15,7 @@ public class WordLadderSolver implements Assignment4Interface
     private List<String> ladder;
     private ArrayList<String> usedWords;
     private ArrayList<String> dictionaryCopy;
- 
-
+    
 	// declare class members here.
 
     // add a constructor for this object. HINT: it would be a good idea to set up the dictionary there
@@ -26,6 +26,8 @@ public class WordLadderSolver implements Assignment4Interface
     	this.ladder = new ArrayList<String>();
     	this.usedWords = new ArrayList<String>();
     	this.dictionaryCopy = new ArrayList<String>();
+    		
+    	
 	}
 
 	// do not change signature of the method implemented from the interface
@@ -33,10 +35,15 @@ public class WordLadderSolver implements Assignment4Interface
     public List<String> computeLadder(String startWord, String endWord) throws NoSuchLadderException 
     {
        // implement this method
+    	   	
+    	if(areWords(startWord, endWord))
+    	{
     	this.dictionaryCopy = new ArrayList<String>();
     	this.dictionaryCopy.addAll(this.dict);
     	this.ladder = new ArrayList<String>();
     	makeLadder(startWord, endWord, 0);
+    	}
+    	else{this.ladder = null;}
     	if(this.ladder.isEmpty()){
     		throw new NoSuchLadderException("No ladder exists between " + startWord + " and " + endWord);
     	}
@@ -54,6 +61,7 @@ public class WordLadderSolver implements Assignment4Interface
     // add additional methods here
     public List<String> makeLadder(String startWord, String endWord, int position)
     {
+    	
     	if(this.ladder.isEmpty()) //we just started, change the position to -1 so we can change the first letter
     	{
     		position = -1;
@@ -67,8 +75,8 @@ public class WordLadderSolver implements Assignment4Interface
     	{
     		newStart = startWord;
     	}
-    	if(newStart.length() != 5 || endWord.length() != 5){return null;} //cannot compare these words, they do not exist in the dictionaty
-    	if(newStart.equalsIgnoreCase(endWord) || areWeDone(newStart, endWord))
+    	if(newStart.length() != 5 || endWord.length() != 5){return null;} //cannot compare these words, they do not exist in the dictionary
+    	if(areWeDone(newStart, endWord))
     	{
     		this.ladder.add(newStart);
     		this.ladder.add(endWord);
@@ -80,7 +88,10 @@ public class WordLadderSolver implements Assignment4Interface
     	//now, we need to find similar words to the startword
     	
     	ArrayList<String> similarWords = new ArrayList<String>();
+    	//similarWords = getSimilar(newStart, endWord, position);
+    	//if(similarWords.isEmpty()){ //if the preffered match is empty, try the unpreffered matching 
     	similarWords = getSimilarWords(newStart, endWord, position);
+    	//}
     
     	/*if(similarWords.isEmpty())
     	{
@@ -94,31 +105,32 @@ public class WordLadderSolver implements Assignment4Interface
     	for(int simI = 0; simI < similarWords.size(); simI ++)
     	{
     		makeLadder(similarWords.get(simI), endWord, whatPositionChanged(newStart, similarWords.get(simI))); //call similar words
+    		
     		if(this.ladder.get(this.ladder.size()-1).equalsIgnoreCase(endWord)){return this.ladder;} //we found a word ladder
     		//no word ladder found? remove this from the ladder because we are not going to use this word
-    		this.ladder.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length()));
-    		this.dictionaryCopy.remove(similarWords.get(simI).substring(0, similarWords.get(simI).length()));
+    		//this.ladder.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length()));
+    		//this.dictionaryCopy.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length())); //remove this word from the dictionary because it didn't work
+    		
     	}
     	//if we are out of the for loop, didn't find a word ladder, so we can remove the startword from the ladder and return
     	this.ladder.remove(newStart);
-    	this.dictionaryCopy.remove(newStart);
-    	
+    	this.dictionaryCopy.remove(newStart); //remove this word from the dictionary because it didn't work
+    
     	return this.ladder;
     }
     
    
       
-    public  ArrayList<String> getSimilarWords(String startWord, String endWord, int position){
+    public ArrayList<String> getSimilarWords(String startWord, String endWord, int position){
     	//need to compare words that have one letter different from startword
     	ArrayList<String> similarWords = new ArrayList<String>();
-    	int dIndex = 0;
-    	while(dIndex < this.dictionaryCopy.size())
+    	
+    for(int dIndex = 0; dIndex < this.dictionaryCopy.size(); dIndex ++ )
     	{
     		//need to check if the dictionary word was already used. 
     		if(alreadyUsed(this.dictionaryCopy.get(dIndex)))
     		{
-    			dIndex = dIndex + 1;
-    			continue;
+    				continue;
     		} //if this word is already used in our ladder, go to the next word, otherwise move on
     		
     		boolean fourLettersame = compareWord(startWord, this.dictionaryCopy.get(dIndex), position); //returns if they have one letter the same
@@ -142,7 +154,7 @@ public class WordLadderSolver implements Assignment4Interface
     				similarWords.add(word);
     			}
     		}
-    		dIndex += 1; //go to next work in the dictionary and see if it is also a similar word
+    		
     	}
     	
     	return similarWords;
@@ -165,16 +177,15 @@ public ArrayList<String> getSimilar(String startword, String endword, int positi
     		for(int dI = 0; dI < this.dictionaryCopy.size(); dI ++) //need to check the whole dictionary and see if we have a direct change of letters startword[1] -> endword[1]
     		{
     			String dictWord = this.dictionaryCopy.get(dI);
-    			if(alreadyUsed(dictWord))//we already have this word in our similar words list, so skip it.
+    			if(alreadyUsed(dictWord))//we already have this word in our ladder list, so skip it.
         		{
-        		
-        			continue;
+    				continue;
         		} 
     			String dictLetter = dictWord.substring(wordIndex, wordIndex + 1); //get the same letter as the others
     			
     			if(dictLetter.equalsIgnoreCase(endLetter))//if the letter we isolated equals the end word's letter we isolated, then compare the rest of the word with the startword
     			{	
-    				if(compareWord(startword, dictWord, position)) //the rest of the letters are similar to the startWord, then we are good.
+    				if(compareWord(startword, dictWord, position)) //if only one word different, we can compare
     				{
     					String word = appendDist(dictWord, endword); //adds the distance the word is from the endword to the wor
     					int addedWord = 0;
@@ -185,7 +196,7 @@ public ArrayList<String> getSimilar(String startword, String endword, int positi
     	    				if(compareD > compareW) //the word in the similar word list is greater than the word we compared it to (meaning its number in front is less)
     	    				{
     	    					similarWords.add(similarI, word); //add the word to the array List at the index we compared 
-    	    					addedWord = addedWord + 1; //activate this "flag" for if statement check below
+    	    					addedWord = 1; //activate this "flag" for if statement check below
     	    					break;//get out of the for loop
     	    				}
     	    			} 
@@ -200,9 +211,68 @@ public ArrayList<String> getSimilar(String startword, String endword, int positi
     	
     	return similarWords;
     }
+
+
+public ArrayList<String> getFamiliarWords(String startword, String endword, int position)
+{
+	ArrayList<String> similarWords = new ArrayList<String>();
+	//need words from the dictionary to compare 
+	for(int dIndex = 0; dIndex < this.dictionaryCopy.size(); dIndex ++)
+	{
+		//need to get the dictionary word
+		String dWord = this.dictionaryCopy.get(dIndex);
+		//need to check if we already have used this word
+		if(alreadyUsed(dWord))
+		{
+			continue; //move to the next word because we cannot use this one
+		}
+		//need to see if this word has 4 letters in common with the start
+		if(compareWord(startword, dWord, position)) //if they do share 4 letters, then we can use this in the similar words list
+		{
+			//need to find how far away from the end word this word is
+			String newDWord = appendDist(dWord, endword); //add the distance to the front.
+			
+			//need to add to similar words, while sorting.
+			if(similarWords.isEmpty())
+			{
+				similarWords.add(newDWord);
+				continue; //skip the rest of the loop because we added this word
+			}
+			else{
+				int flag = 0;
+				for(int sortI = 0; sortI < similarWords.size(); sortI ++)
+			
+					{
+						String compSim = similarWords.get(sortI);
+						int simNum = Integer.parseInt(compSim.substring(0, 1));
+						String compNew = newDWord.substring(0, 1);
+						int newNum = Integer.parseInt(compNew);
+						if (simNum > newNum) // new num has a lesser number
+						{
+							flag = 1;
+							similarWords.add(sortI, dWord);
+							break;
+						}
+				
+				}
+				if(flag != 0)
+				{
+					similarWords.add(dWord);
+				}
+			}
+		}
+		
+		
+		
+	}
+
+	return similarWords;
+}
+
+
 public boolean compareWord(String startWord, String dWord, int position)
         {
-        	//if the words have only one letter different
+        	//this checks if the words have only one letter different
         	if(startWord.equalsIgnoreCase(dWord))
         	{
         		return false;
@@ -240,7 +310,7 @@ public int whatPositionChanged(String startWord, String similarWord)
 	{
 		String startLetter = startWord.substring(stIndex, stIndex + 1);
 		String similarLetter = newSimilarWord.substring(stIndex, stIndex + 1);
-		if(startWord.substring(stIndex, stIndex +1).equalsIgnoreCase(similarLetter))
+		if(startLetter.equalsIgnoreCase(similarLetter))
 		{
 			continue;
 		}
@@ -278,28 +348,66 @@ public String appendDist(String word, String endWord)
 	{
 		String wordLetter = word.substring(wordIndex, wordIndex + 1); //get one letter of word
 		String endLetter = endWord.substring(wordIndex, wordIndex + 1); //get the same indexed letter of endword
-		if(!wordLetter.equalsIgnoreCase(endLetter)) //if they are equal, then add 1 to howSimilar
+		if(!wordLetter.equalsIgnoreCase(endLetter)) //if they are not equal, then add 1 to notSimilar
 		{
 			notSimilar = notSimilar + 1;
 		}
 	}
-	
-	
+		
 	return Integer.toString(notSimilar) + word; //concatenate how similar the word is to the front of the word
 }
 
 
 public boolean alreadyUsed(String word) //checks to see if we have already used this word in our word ladder
 {
-	for(int usedIndex = 0; usedIndex < this.usedWords.size(); usedIndex ++)
+	for(int usedIndex = 0; usedIndex < this.ladder.size(); usedIndex ++)
 	{
-		if(word.equalsIgnoreCase(this.usedWords.get(usedIndex)))
+		if(word.equalsIgnoreCase(this.ladder.get(usedIndex)))
 		{
 			return true;
 		}
 	}
 	return false;
 	
+}
+public boolean areWords(String start, String end)
+{
+	if(start == null || end == null){return false;}
+	if(start.length() != 5 || end.length() != 5)
+	{
+		return false;
+	}
+	for(int wordI = 0; wordI < start.length(); wordI ++)
+	{
+		if(!start.substring(wordI, wordI + 1).matches("[a-zA-Z]") || !end.substring(wordI, wordI + 1).matches("[a-zA-Z]"))
+		{
+			return false;
+		}
+	}
+	//check in the dictionary
+	boolean trueOne = false;
+	for(int d = 0; d < this.dict.size(); d ++)
+	{
+		String compWord = this.dict.get(d);
+		if(start.equalsIgnoreCase(compWord))
+		{
+			trueOne = true;
+			break;
+		}
+	}
+	boolean trueTwo = false;
+	for(int dIndex = 0; dIndex < this.dict.size(); dIndex ++)
+	{
+		String compEND = this.dict.get(dIndex);
+		if(end.equalsIgnoreCase(compEND))
+		{
+			trueTwo = true;
+			break;
+		}
+	}
+	
+	//out of the passed the for loop
+	return trueTwo || trueOne;
 }
 
 }

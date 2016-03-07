@@ -14,7 +14,8 @@ public class Assign4Driver
     {
         // Create a word ladder solver object
        
-        if (args.length != 2)
+        
+        if (args.length != 2) 
 		{
 			System.err.println ("Error: Incorrect number of command line arguments");
 			System.exit(-1);
@@ -29,6 +30,7 @@ public class Assign4Driver
     	 Assignment4Interface wordLadderSolver = new WordLadderSolver(dictionary);
 		try 
 		{
+			
 			FileReader freader = new FileReader(filename);
 			BufferedReader reader = new BufferedReader(freader);
 			
@@ -48,8 +50,10 @@ public class Assign4Driver
 		           
 		        } 
 		        catch (NoSuchLadderException e) 
-		        {
-		           e.printStackTrace();
+		        {	
+		        	System.out.println("***************************");
+		        	System.out.println("no word ladder exists between " + parsedLine[0] + " and " + parsedLine[1]);
+		        	System.out.println("***************************");
 		        }
 			}
 		} 
@@ -68,8 +72,9 @@ public class Assign4Driver
    
    public static ArrayList<String> processLinesInDictionary(String filename)
    {//need to make the dictionary a hash table
-	  // HashMap<String,String> dictionary = new HashMap();
+	  // HashMap<String,String> dictHash = new HashMap();
 	   ArrayList<String> dictionary = new ArrayList<String>();
+	   
 	   try 
 		{
 			FileReader freader = new FileReader(filename);
@@ -85,7 +90,7 @@ public class Assign4Driver
 				dictionary.get(parsed);
 				Collection<String> words = dictionary.values();*/
 				dictionary.add(parsedword); //should add alphabetical anyways
-				
+				//dictHash.put(parsedword, parsedword);
 			}
 		} 
 		catch (FileNotFoundException e) 
@@ -103,14 +108,14 @@ public class Assign4Driver
    }
     
     public static String[] parseLine(String s)
-    {	
+    {	if(s == null){return null;}
     	if(s.substring(0, 1).contentEquals("*")){return null;} //ignore this string
     	String[] split = s.split("\\P{Alpha}+"); //split the string based on non-alphabetic symbols
     	if(split.length != 2){return null;}
     	return split;
     }
     public static String parseWord(String s)
-    {	
+    {	if(s == null){return null;}
     	if(s.substring(0, 1).contentEquals("*")){return null;} //ignore this string
     	String[]  split = s.split("\\P{Alpha}+"); //split the string based on non-alphabetic symbols
     	return split[0];

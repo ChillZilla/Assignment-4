@@ -30,6 +30,7 @@ public class Assign4Driver
     	 Assignment4Interface wordLadderSolver = new WordLadderSolver(dictionary);
 		try 
 		{
+			
 			FileReader freader = new FileReader(filename);
 			BufferedReader reader = new BufferedReader(freader);
 			
@@ -40,7 +41,7 @@ public class Assign4Driver
 				if(parsedLine == null){continue;} //we are skipping this line, so we can go to next iteration
 		        try 
 		        {
-		            List<String> result = wordLadderSolver.computeLadder(parsedLine[0], parsedLine[1]);
+		            List<String> result = wordLadderSolver.computeLadder(null, null);
 		          //  boolean correct = wordLadderSolver.validateResult(parsedLine[0], parsedLine[1], result);
 		            for(int printI = 0; printI < result.size(); printI ++)
 		            {
