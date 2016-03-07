@@ -69,8 +69,9 @@ public class Assign4Driver
    
    public static ArrayList<String> processLinesInDictionary(String filename)
    {//need to make the dictionary a hash table
-	  // HashMap<String,String> dictionary = new HashMap();
+	  // HashMap<String,String> dictHash = new HashMap();
 	   ArrayList<String> dictionary = new ArrayList<String>();
+	   
 	   try 
 		{
 			FileReader freader = new FileReader(filename);
@@ -86,7 +87,7 @@ public class Assign4Driver
 				dictionary.get(parsed);
 				Collection<String> words = dictionary.values();*/
 				dictionary.add(parsedword); //should add alphabetical anyways
-				
+				//dictHash.put(parsedword, parsedword);
 			}
 		} 
 		catch (FileNotFoundException e) 
