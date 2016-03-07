@@ -18,3 +18,4 @@ We made the following assumptions:
 
 4) The dictionary is passed in sorted, and is about 6000 words
 
+5) we will be reading inputs from a file. Dictionary is the first parameter passed, and the input words are the second parameter.
