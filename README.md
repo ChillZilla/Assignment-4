@@ -3,6 +3,8 @@ Word Ladder project
 
 AA44462 and EAM3422
 
+**note about commit history from Amanda : I did most of the commiting in this repo for our actual code, but Ethan and I collaborated on the code together, we just wrote it mostly from my computer when we met**
+
 
 This project is to detect a word ladder between two words. 
 
