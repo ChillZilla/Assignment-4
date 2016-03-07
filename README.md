@@ -3,6 +3,8 @@ Word Ladder project
 
 AA44462 and EAM3422
 
+GITHUB URL: https://github.com/ChillZilla/Assignment-4.git
+
 **note about commit history from Amanda : I did most of the commiting in this repo for our actual code, but Ethan and I collaborated on the code together, we just wrote it mostly from my computer when we met**
 
 
