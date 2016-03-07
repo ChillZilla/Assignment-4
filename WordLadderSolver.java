@@ -85,36 +85,28 @@ public class WordLadderSolver implements Assignment4Interface
     	
     	this.ladder.add(newStart);
     	this.usedWords.add(newStart);
+    	System.out.println(newStart);
     	//now, we need to find similar words to the startword
     	
     	ArrayList<String> similarWords = new ArrayList<String>();
-    	//similarWords = getSimilar(newStart, endWord, position);
-    	//if(similarWords.isEmpty()){ //if the preffered match is empty, try the unpreffered matching 
-    	similarWords = getSimilarWords(newStart, endWord, position);
-    	//}
-    
-    	/*if(similarWords.isEmpty())
-    	{
-    		similarWords = getSimilarWords(newStart, endWord, position);
-    		if(similarWords.isEmpty())
-    		{
-    			return this.ladder;
-    		}
-    	}*/
     	
+    	similarWords = getSimilarWords(newStart, endWord, position);
+    		
     	for(int simI = 0; simI < similarWords.size(); simI ++)
     	{
+    		System.out.println("number of words in dictionary: " + this.dictionaryCopy.size());
     		makeLadder(similarWords.get(simI), endWord, whatPositionChanged(newStart, similarWords.get(simI))); //call similar words
+    		
     		if(this.ladder.get(this.ladder.size()-1).equalsIgnoreCase(endWord)){return this.ladder;} //we found a word ladder
     		//no word ladder found? remove this from the ladder because we are not going to use this word
-    		this.ladder.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length()));
-    		//this.dictionaryCopy.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length())); //remove this word from the dictionary because it didn't work
+    		//this.ladder.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length()));
+    		this.dictionaryCopy.remove(similarWords.get(simI).substring(1, similarWords.get(simI).length())); //remove this word from the dictionary because it didn't work
     		
     	}
     	//if we are out of the for loop, didn't find a word ladder, so we can remove the startword from the ladder and return
     	this.ladder.remove(newStart);
     	this.dictionaryCopy.remove(newStart); //remove this word from the dictionary because it didn't work
-    
+    	//System.out.println("number of words in dictionary: " + this.dictionaryCopy.size());
     	return this.ladder;
     }
     
@@ -211,64 +203,6 @@ public ArrayList<String> getSimilar(String startword, String endword, int positi
     	return similarWords;
     }
 
-
-public ArrayList<String> getFamiliarWords(String startword, String endword, int position)
-{
-	ArrayList<String> similarWords = new ArrayList<String>();
-	//need words from the dictionary to compare 
-	for(int dIndex = 0; dIndex < this.dictionaryCopy.size(); dIndex ++)
-	{
-		//need to get the dictionary word
-		String dWord = this.dictionaryCopy.get(dIndex);
-		//need to check if we already have used this word
-		if(alreadyUsed(dWord))
-		{
-			continue; //move to the next word because we cannot use this one
-		}
-		//need to see if this word has 4 letters in common with the start
-		if(compareWord(startword, dWord, position)) //if they do share 4 letters, then we can use this in the similar words list
-		{
-			//need to find how far away from the end word this word is
-			String newDWord = appendDist(dWord, endword); //add the distance to the front.
-			
-			//need to add to similar words, while sorting.
-			if(similarWords.isEmpty())
-			{
-				similarWords.add(newDWord);
-				continue; //skip the rest of the loop because we added this word
-			}
-			else{
-				int flag = 0;
-				for(int sortI = 0; sortI < similarWords.size(); sortI ++)
-			
-					{
-						String compSim = similarWords.get(sortI);
-						int simNum = Integer.parseInt(compSim.substring(0, 1));
-						String compNew = newDWord.substring(0, 1);
-						int newNum = Integer.parseInt(compNew);
-						if (simNum > newNum) // new num has a lesser number
-						{
-							flag = 1;
-							similarWords.add(sortI, dWord);
-							break;
-						}
-				
-				}
-				if(flag != 0)
-				{
-					similarWords.add(dWord);
-				}
-			}
-		}
-		
-		
-		
-	}
-
-	return similarWords;
-}
-
-
 public boolean compareWord(String startWord, String dWord, int position)
         {
         	//this checks if the words have only one letter different
@@ -334,7 +268,7 @@ public boolean areWeDone(String word, String endWord)
 			countSame = countSame + 1;
 		}
 	}
-	if(countSame == 4){return true;} //they are only one letter apart or they are the same word (each word is only 5 letters)
+	if(countSame >= 4){return true;} //they are only one letter apart or they are the same word (each word is only 5 letters)
 	
 	return false;
 }
@@ -359,9 +293,9 @@ public String appendDist(String word, String endWord)
 
 public boolean alreadyUsed(String word) //checks to see if we have already used this word in our word ladder
 {
-	for(int usedIndex = 0; usedIndex < this.ladder.size(); usedIndex ++)
+	for(int usedIndex = 0; usedIndex < this.usedWords.size(); usedIndex ++)
 	{
-		if(word.equalsIgnoreCase(this.ladder.get(usedIndex)))
+		if(word.equalsIgnoreCase(this.usedWords.get(usedIndex)))
 		{
 			return true;
 		}
@@ -378,13 +312,35 @@ public boolean areWords(String start, String end)
 	}
 	for(int wordI = 0; wordI < start.length(); wordI ++)
 	{
-		if(!start.substring(wordI, wordI + 1).matches("[a-zA-Z]") || end.substring(wordI, wordI + 1).matches("[a-zA-Z]"))
+		if(!start.substring(wordI, wordI + 1).matches("[a-zA-Z]") || !end.substring(wordI, wordI + 1).matches("[a-zA-Z]"))
 		{
 			return false;
 		}
 	}
-	//passed the for loop
-	return true;
+	//check in the dictionary
+	boolean trueOne = false;
+	for(int d = 0; d < this.dict.size(); d ++)
+	{
+		String compWord = this.dict.get(d);
+		if(start.equalsIgnoreCase(compWord))
+		{
+			trueOne = true;
+			break;
+		}
+	}
+	boolean trueTwo = false;
+	for(int dIndex = 0; dIndex < this.dict.size(); dIndex ++)
+	{
+		String compEND = this.dict.get(dIndex);
+		if(end.equalsIgnoreCase(compEND))
+		{
+			trueTwo = true;
+			break;
+		}
+	}
+	
+	//out of the passed the for loop
+	return trueTwo || trueOne;
 }
 
 }
